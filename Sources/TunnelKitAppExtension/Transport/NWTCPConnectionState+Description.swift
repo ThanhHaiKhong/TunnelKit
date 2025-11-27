@@ -2,7 +2,7 @@
 import Foundation
 import NetworkExtension
 
-extension NWTCPConnectionState: CustomStringConvertible {
+extension NWTCPConnectionState: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .cancelled: return "cancelled"

@@ -2,7 +2,7 @@
 import Foundation
 import NetworkExtension
 
-extension NWUDPSessionState: CustomStringConvertible {
+extension NWUDPSessionState: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .cancelled: return "cancelled"

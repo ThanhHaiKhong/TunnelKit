@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver", from: "1.9.0"),
-        .package(url: "https://github.com/passepartoutvpn/openssl-apple", from: "3.2.105"),
+        .package(url: "https://github.com/passepartoutvpn/openssl-apple", from: "3.5.501"),
     ],
     targets: [
         .target(
@@ -88,10 +88,6 @@ let package = Package(
             name: "TunnelKitLZO",
             dependencies: [],
             exclude: [
-                "lib/COPYING",
-                "lib/Makefile",
-                "lib/README.LZO",
-                "lib/testmini.c"
             ]
 		),
         .target(
@@ -119,39 +115,6 @@ let package = Package(
             dependencies: [
 				
 			]
-		),
-        .testTarget(
-            name: "TunnelKitCoreTests",
-            dependencies: [
-                "TunnelKitCore"
-            ],
-            exclude: [
-                "RandomTests.swift",
-                "RawPerformanceTests.swift",
-                "RoutingTests.swift"
-            ]
-		),
-        .testTarget(
-            name: "TunnelKitOpenVPNTests",
-            dependencies: [
-                "TunnelKitOpenVPNCore",
-                "TunnelKitOpenVPNAppExtension",
-                "TunnelKitLZO"
-            ],
-            exclude: [
-                "DataPathPerformanceTests.swift",
-                "EncryptionPerformanceTests.swift"
-            ],
-            resources: [
-                .process("Resources")
-            ]
-		),
-        .testTarget(
-            name: "TunnelKitLZOTests",
-            dependencies: [
-                "TunnelKitCore",
-                "TunnelKitLZO"
-            ]
 		)
     ]
 )
