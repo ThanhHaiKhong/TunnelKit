@@ -16,9 +16,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver", from: "1.9.0"),
-        .package(url: "https://github.com/passepartoutvpn/openssl-apple", from: "3.5.501"),
     ],
     targets: [
+        .binaryTarget(
+            name: "openssl",
+            path: "Frameworks/openssl.xcframework"
+        ),
         .target(
             name: "TunnelKit",
             dependencies: [
@@ -107,7 +110,7 @@ let package = Package(
             dependencies: [
                 "CTunnelKitCore",
                 "CTunnelKitOpenVPNCore",
-                "openssl-apple"
+                "openssl"
             ]
 		),
         .target(
