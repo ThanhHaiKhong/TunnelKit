@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "openssl-apple",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/0xBF90E913/openssl-apple.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "125e51355c8679729a3ae7ecf94258457b093bc7"
+      }
+    },
+    {
       "identity" : "swiftybeaver",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SwiftyBeaver/SwiftyBeaver",

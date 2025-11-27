@@ -16,13 +16,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver", from: "1.9.0"),
+		.package(url: "https://github.com/0xBF90E913/openssl-apple.git", branch: "master")
     ],
     targets: [
-        .binaryTarget(
-            name: "openssl",
-            url: "https://github.com/ThanhHaiKhong/TunnelKit/releases/download/3.5.501/openssl.xcframework.zip",
-            checksum: "61f2f3b4d596cc43a98eee65f70ec840bda070b2710965b5c01c6463b2672357"
-        ),
+//        .binaryTarget(
+//            name: "openssl",
+//            url: "https://github.com/ThanhHaiKhong/TunnelKit/releases/download/3.5.501/openssl.xcframework.zip",
+//            checksum: "61f2f3b4d596cc43a98eee65f70ec840bda070b2710965b5c01c6463b2672357"
+//        ),
         .target(
             name: "TunnelKit",
             dependencies: [
@@ -111,7 +112,7 @@ let package = Package(
             dependencies: [
                 "CTunnelKitCore",
                 "CTunnelKitOpenVPNCore",
-                "openssl"
+                "openssl-apple"
             ]
 		),
         .target(
