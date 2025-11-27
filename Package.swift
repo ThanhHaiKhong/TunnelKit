@@ -21,7 +21,7 @@ let package = Package(
         .binaryTarget(
             name: "openssl",
             url: "https://github.com/ThanhHaiKhong/TunnelKit/releases/download/3.5.501/openssl.xcframework.zip",
-            checksum: "b6e23b69f0c629471fc8892e80b6c980f610ed382ce598ba4d88cd003d80e50b"
+            checksum: "61f2f3b4d596cc43a98eee65f70ec840bda070b2710965b5c01c6463b2672357"
         ),
         .target(
             name: "TunnelKit",
