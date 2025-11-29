@@ -16,13 +16,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver", from: "1.9.0"),
+        .package(url: "https://github.com/firebase/boringssl-SwiftPM.git", from: "0.0.0"),
     ],
     targets: [
-        .binaryTarget(
-            name: "openssl",
-            url: "https://github.com/ThanhHaiKhong/TunnelKit/releases/download/3.2.0/openssl.xcframework.zip",
-            checksum: "ef28a2a3ad0f4d31b642fd2bd151e1400b2d1d38e77d9f257d7bee038e308da7"
-        ),
         .target(
             name: "TunnelKit",
             dependencies: [
@@ -111,7 +107,7 @@ let package = Package(
             dependencies: [
                 "CTunnelKitCore",
                 "CTunnelKitOpenVPNCore",
-                "openssl"
+                .product(name: "openssl_grpc", package: "boringssl-SwiftPM")
             ]
 		),
         .target(

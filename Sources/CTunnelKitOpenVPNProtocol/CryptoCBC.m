@@ -2,6 +2,7 @@
 
 #import <openssl/evp.h>
 #import <openssl/rand.h>
+#import <openssl/hmac.h>
 
 #import "CryptoCBC.h"
 #import "CryptoMacros.h"
@@ -23,8 +24,6 @@ const NSInteger CryptoCBCMaxHMACLength = 100;
 @property (nonatomic, assign) int hmacKeyLength;
 @property (nonatomic, assign) int digestLength;
 
-@property (nonatomic, unsafe_unretained) EVP_MAC *mac;
-@property (nonatomic, unsafe_unretained) OSSL_PARAM *macParams;
 @property (nonatomic, unsafe_unretained) EVP_CIPHER_CTX *cipherCtxEnc;
 @property (nonatomic, unsafe_unretained) EVP_CIPHER_CTX *cipherCtxDec;
 @property (nonatomic, strong) ZeroingData *hmacKeyEnc;
@@ -66,12 +65,6 @@ const NSInteger CryptoCBCMaxHMACLength = 100;
             self.cipherCtxDec = EVP_CIPHER_CTX_new();
         }
 
-        self.mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
-        OSSL_PARAM *macParams = calloc(2, sizeof(OSSL_PARAM));
-        macParams[0] = OSSL_PARAM_construct_utf8_string("digest", self.utfDigestName, 0);
-        macParams[1] = OSSL_PARAM_construct_end();
-        self.macParams = macParams;
-
         self.bufferDecHMAC = allocate_safely(CryptoCBCMaxHMACLength);
     }
     return self;
@@ -83,8 +76,6 @@ const NSInteger CryptoCBCMaxHMACLength = 100;
         EVP_CIPHER_CTX_free(self.cipherCtxEnc);
         EVP_CIPHER_CTX_free(self.cipherCtxDec);
     }
-    EVP_MAC_free(self.mac);
-    free(self.macParams);
     bzero(self.bufferDecHMAC, CryptoCBCMaxHMACLength);
     free(self.bufferDecHMAC);
 
@@ -152,11 +143,11 @@ const NSInteger CryptoCBCMaxHMACLength = 100;
         memcpy(outEncrypted, bytes, length);
         l1 = (int)length;
     }
-    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(self.mac);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_init(ctx, self.hmacKeyEnc.bytes, self.hmacKeyEnc.count, self.macParams);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_update(ctx, outIV, l1 + l2 + self.cipherIVLength);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_final(ctx, dest, &l3, self.digestLength);
-    EVP_MAC_CTX_free(ctx);
+    HMAC_CTX *ctx = HMAC_CTX_new();
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Init_ex(ctx, self.hmacKeyEnc.bytes, (int)self.hmacKeyEnc.count, self.digest, NULL);
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Update(ctx, outIV, l1 + l2 + self.cipherIVLength);
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Final(ctx, dest, (unsigned int *)&l3);
+    HMAC_CTX_free(ctx);
 
     *destLength = l1 + l2 + self.cipherIVLength + self.digestLength;
     
@@ -192,11 +183,11 @@ const NSInteger CryptoCBCMaxHMACLength = 100;
     size_t l1 = 0, l2 = 0;
     int code = 1;
 
-    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(self.mac);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_init(ctx, self.hmacKeyDec.bytes, self.hmacKeyDec.count, self.macParams);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_update(ctx, bytes + self.digestLength, length - self.digestLength);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_final(ctx, self.bufferDecHMAC, &l1, self.digestLength);
-    EVP_MAC_CTX_free(ctx);
+    HMAC_CTX *ctx = HMAC_CTX_new();
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Init_ex(ctx, self.hmacKeyDec.bytes, (int)self.hmacKeyDec.count, self.digest, NULL);
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Update(ctx, bytes + self.digestLength, length - self.digestLength);
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Final(ctx, self.bufferDecHMAC, (unsigned int *)&l1);
+    HMAC_CTX_free(ctx);
 
     if (TUNNEL_CRYPTO_SUCCESS(code) && CRYPTO_memcmp(self.bufferDecHMAC, bytes, self.digestLength) != 0) {
         if (error) {
@@ -226,11 +217,11 @@ const NSInteger CryptoCBCMaxHMACLength = 100;
     size_t l1 = 0;
     int code = 1;
 
-    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(self.mac);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_init(ctx, self.hmacKeyDec.bytes, self.hmacKeyDec.count, self.macParams);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_update(ctx, bytes + self.digestLength, length - self.digestLength);
-    TUNNEL_CRYPTO_TRACK_STATUS(code) EVP_MAC_final(ctx, self.bufferDecHMAC, &l1, self.digestLength);
-    EVP_MAC_CTX_free(ctx);
+    HMAC_CTX *ctx = HMAC_CTX_new();
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Init_ex(ctx, self.hmacKeyDec.bytes, (int)self.hmacKeyDec.count, self.digest, NULL);
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Update(ctx, bytes + self.digestLength, length - self.digestLength);
+    TUNNEL_CRYPTO_TRACK_STATUS(code) HMAC_Final(ctx, self.bufferDecHMAC, (unsigned int *)&l1);
+    HMAC_CTX_free(ctx);
 
     if (TUNNEL_CRYPTO_SUCCESS(code) && CRYPTO_memcmp(self.bufferDecHMAC, bytes, self.digestLength) != 0) {
         if (error) {
