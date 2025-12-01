@@ -6,24 +6,24 @@ import PackageDescription
 let package = Package(
     name: "TunnelKit",
     platforms: [
-        .iOS(.v15), .macOS(.v12), .tvOS(.v17)
+        .iOS(.v15), .macOS(.v12), .tvOS(.v17),
     ],
     products: [
-		.singleTargetLibrary("TunnelKit"),
-		.singleTargetLibrary("TunnelKitOpenVPN"),
-		.singleTargetLibrary("TunnelKitOpenVPNAppExtension"),
-		.singleTargetLibrary("TunnelKitLZO")
+        .singleTargetLibrary("TunnelKit"),
+        .singleTargetLibrary("TunnelKitOpenVPN"),
+        .singleTargetLibrary("TunnelKitOpenVPNAppExtension"),
+        .singleTargetLibrary("TunnelKitLZO"),
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver", from: "1.9.0"),
-        .package(url: "https://github.com/firebase/boringssl-SwiftPM.git", from: "0.0.0"),
+        .package(url: "https://github.com/ThanhHaiKhong/boringSSL-SwiftPM.git", from: "0.0.0"),
     ],
     targets: [
         .target(
             name: "TunnelKit",
             dependencies: [
                 "TunnelKitCore",
-                "TunnelKitManager"
+                "TunnelKitManager",
             ]
         ),
         .target(
@@ -31,97 +31,93 @@ let package = Package(
             dependencies: [
                 "__TunnelKitUtils",
                 "CTunnelKitCore",
-                "SwiftyBeaver"
+                "SwiftyBeaver",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitManager",
             dependencies: [
-                "SwiftyBeaver"
+                "SwiftyBeaver",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitAppExtension",
             dependencies: [
-                "TunnelKitCore"
+                "TunnelKitCore",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitOpenVPN",
             dependencies: [
                 "TunnelKitOpenVPNCore",
-                "TunnelKitOpenVPNManager"
+                "TunnelKitOpenVPNManager",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitOpenVPNCore",
             dependencies: [
                 "TunnelKitCore",
                 "CTunnelKitOpenVPNCore",
-                "CTunnelKitOpenVPNProtocol" // FIXME: remove dependency on TLSBox
+                "CTunnelKitOpenVPNProtocol", // FIXME: remove dependency on TLSBox
             ]
-		),
+        ),
         .target(
             name: "TunnelKitOpenVPNManager",
             dependencies: [
                 "TunnelKitManager",
-                "TunnelKitOpenVPNCore"
+                "TunnelKitOpenVPNCore",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitOpenVPNProtocol",
             dependencies: [
                 "TunnelKitOpenVPNCore",
-                "CTunnelKitOpenVPNProtocol"
+                "CTunnelKitOpenVPNProtocol",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitOpenVPNAppExtension",
             dependencies: [
                 "TunnelKitAppExtension",
                 "TunnelKitOpenVPNCore",
                 "TunnelKitOpenVPNManager",
-                "TunnelKitOpenVPNProtocol"
+                "TunnelKitOpenVPNProtocol",
             ]
-		),
+        ),
         .target(
             name: "TunnelKitLZO",
             dependencies: [],
             exclude: [
             ]
-		),
+        ),
         .target(
             name: "CTunnelKitCore",
             dependencies: [
-				
-			]
-		),
+            ]
+        ),
         .target(
             name: "CTunnelKitOpenVPNCore",
             dependencies: [
-				
-			]
-		),
+            ]
+        ),
         .target(
             name: "CTunnelKitOpenVPNProtocol",
             dependencies: [
                 "CTunnelKitCore",
                 "CTunnelKitOpenVPNCore",
-                .product(name: "openssl_grpc", package: "boringssl-SwiftPM")
+                .product(name: "openssl_grpc", package: "boringssl-SwiftPM"),
             ]
-		),
+        ),
         .target(
             name: "__TunnelKitUtils",
             dependencies: [
-				
-			]
-		)
+            ]
+        ),
     ]
 )
 
 extension Product {
-	static func singleTargetLibrary(_ name: String) -> Product {
-		.library(name: name, targets: [name])
-	}
+    static func singleTargetLibrary(_ name: String) -> Product {
+        .library(name: name, targets: [name])
+    }
 }
-
